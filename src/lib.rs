@@ -17,6 +17,19 @@ impl fmt::Display for GuessError {
 impl Guess {
     /// # Errors
     /// Will return an error if given a string that isn't 5 letters
+    ///
+    /// # Examples
+    /// ```
+    /// let rad = wordle::Guess::build("rad".to_string());
+    ///
+    /// assert!(rad.is_err())
+    /// ```
+    ///
+    /// ```
+    /// let crane = wordle::Guess::build("crane".to_string());
+    ///
+    /// assert!(crane.is_ok())
+    /// ```
     pub fn build(text: String) -> Result<Self, GuessError> {
         if text.len() != 5 {
             return Err(GuessError);
@@ -36,12 +49,13 @@ mod tests {
 
     #[test]
     fn it_works() {
-        let _ = Guess::build("crane".to_owned()).unwrap();
+        let _ = Guess::build("radio".to_owned())
+            .expect("Building radio shouldn't ever fail in this test");
     }
 
     #[test]
-    #[should_panic(expected = "called `Result::unwrap()` on an `Err` value: GuessError")]
+    #[should_panic(expected = "I want this test to fail: GuessError")]
     fn it_doesnt_work_too() {
-        let _ = Guess::build("wow".to_owned()).unwrap();
+        let _ = Guess::build("wow".to_owned()).expect("I want this test to fail");
     }
 }
