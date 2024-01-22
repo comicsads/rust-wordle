@@ -67,9 +67,8 @@ impl Guess {
             let answer_char = answer.text.chars().nth(i).unwrap();
             if guessed_char == answer_char {
                 resp.push('G');
-            } else if false {
-                //TODO: Yellow letters
-                todo!()
+            } else if answer.to_string().contains(guessed_char) {
+                resp.push('Y');
             } else {
                 resp.push('X');
             }
@@ -132,7 +131,7 @@ mod tests {
         let abide = Guess::build("abide".to_string()).unwrap();
 
         let resp: GameResponse = speed.verify(abide);
-        assert_eq!(resp.text, "XXYXX");
+        assert_eq!(resp.text, "XXYXY");
     }
 
     #[test]
@@ -159,6 +158,6 @@ mod tests {
         let crepe = Guess::build("crepe".to_string()).unwrap();
 
         let resp: GameResponse = speed.verify(crepe);
-        assert_eq!(resp.text, "XXGYX");
+        assert_eq!(resp.text, "XYGYX");
     }
 }
