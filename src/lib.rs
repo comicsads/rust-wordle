@@ -98,6 +98,24 @@ impl GameResponse {
     const fn new(text: String) -> Self {
         Self { text }
     }
+
+    fn pretty_string(&self) -> String {
+        const GREEN: char = '🟩';
+        const YELLOW: char = '🟨';
+        const GRAY: char = '⬜';
+
+        let mut output = String::new();
+        for char in self.text.chars() {
+            let emoji = match char {
+                'G' => GREEN,
+                'Y' => YELLOW,
+                'X' => GRAY,
+                _ => panic!("GameResponse contains char that isn't G, Y, or X!"),
+            };
+            output.push(emoji);
+        }
+        output
+    }
 }
 
 impl fmt::Display for GameResponse {
