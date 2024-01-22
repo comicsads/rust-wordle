@@ -67,6 +67,11 @@ impl Guess {
             let answer_char = answer.text.chars().nth(i).unwrap();
             if guessed_char == answer_char {
                 resp.push('G');
+            } else if false {
+                //TODO: Yellow letters
+                todo!()
+            } else {
+                resp.push('X');
             }
         }
         GameResponse { text: resp }
