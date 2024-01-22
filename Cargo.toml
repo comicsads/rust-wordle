@@ -8,8 +8,8 @@ edition = "2021"
 [dependencies]
 rand = "0.8.5"
 
-[lints.rust]
-unsafe_code = "forbid"
+# [lints.rust]
+# unsafe_code = "forbid"
 
 [lints.clippy]
 enum_glob_use = "deny"

@@ -6,11 +6,12 @@ pub struct Guess {
 }
 
 #[derive(Debug)]
-pub struct GuessError;
+pub struct GuessError(String);
 
 impl fmt::Display for GuessError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "wasn't given 5 letters exactly!")
+        let Self(error_text) = self;
+        write!(f, "{error_text}")
     }
 }
 
@@ -32,9 +33,20 @@ impl Guess {
     /// ```
     pub fn build(text: String) -> Result<Self, GuessError> {
         if text.len() != 5 {
-            return Err(GuessError);
+            return Err(GuessError("wasn't given 5 letters exactly!".to_owned()));
+        }
+        if !text.chars().all(char::is_alphanumeric) {
+            return Err(GuessError("wasn't given alphanumeric string!".to_owned()))
         }
         Ok(Self { text })
+    }
+
+    /// # Safety
+    /// Has no checking for length or alphanumeric-ness
+    /// Recommended that you use build() instead
+    #[must_use]
+    pub const unsafe fn new (text:String) -> Self {
+        Self{ text }
     }
 }
 impl fmt::Display for Guess {
