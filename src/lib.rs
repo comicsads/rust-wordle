@@ -6,6 +6,10 @@ pub struct Guess {
     text: String,
 }
 
+const GREEN: char = '🟩';
+const YELLOW: char = '🟨';
+const GRAY: char = '⬜';
+
 #[derive(Debug)]
 pub struct GuessError<'a>(&'a str);
 
@@ -100,21 +104,15 @@ impl GameResponse {
     }
 
     fn pretty_string(&self) -> String {
-        const GREEN: char = '🟩';
-        const YELLOW: char = '🟨';
-        const GRAY: char = '⬜';
-
-        let mut output = String::new();
-        for char in self.text.chars() {
-            let emoji = match char {
+        self.text
+            .chars()
+            .map(|c| match c {
                 'G' => GREEN,
                 'Y' => YELLOW,
                 'X' => GRAY,
                 _ => panic!("GameResponse contains char that isn't G, Y, or X!"),
-            };
-            output.push(emoji);
-        }
-        output
+            })
+            .collect()
     }
 }
 
@@ -181,5 +179,22 @@ mod tests {
 
         let resp: GameResponse = speed.verify(&crepe);
         assert_eq!(resp.text, "XYGYX");
+    }
+
+    #[test]
+    fn test_gameresp_pretty() {
+        let resp = GameResponse {
+            text: "GYX".to_string(),
+        };
+        assert_eq!(resp.pretty_string(), "🟩🟨⬜");
+    }
+
+    #[test]
+    #[should_panic(expected = "GameResponse contains char that isn't G, Y, or X!")]
+    fn test_gameresp_pretty_crash() {
+        let resp = GameResponse {
+            text: "GYGAX".to_string(),
+        };
+        resp.pretty_string();
     }
 }
