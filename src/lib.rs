@@ -36,7 +36,7 @@ impl Guess {
             return Err(GuessError("wasn't given 5 letters exactly!"));
         }
         if !text.chars().all(char::is_alphanumeric) {
-            return Err(GuessError("wasn't given alphanumeric string!"))
+            return Err(GuessError("wasn't given alphanumeric string!"));
         }
         Ok(Self { text })
     }
@@ -55,8 +55,8 @@ impl Guess {
     /// }
     /// ```
     #[must_use]
-    pub const unsafe fn new (text:String) -> Self {
-        Self{ text }
+    pub const unsafe fn new(text: String) -> Self {
+        Self { text }
     }
 }
 impl fmt::Display for Guess {
@@ -79,5 +79,25 @@ mod tests {
     #[should_panic(expected = "I want this test to fail: GuessError")]
     fn it_doesnt_work_too() {
         let _ = Guess::build("wow".to_owned()).expect("I want this test to fail");
+    }
+
+    #[test]
+    fn test_speed_abide() {
+        todo!()
+    }
+
+    #[test]
+    fn test_speed_erase() {
+        todo!()
+    }
+
+    #[test]
+    fn test_speed_steal() {
+        todo!()
+    }
+
+    #[test]
+    fn test_speed_crepe() {
+        todo!()
     }
 }
