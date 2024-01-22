@@ -1,6 +1,6 @@
 use std::fmt;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Guess {
     text: String,
 }
@@ -44,6 +44,16 @@ impl Guess {
     /// # Safety
     /// Has no checking for length or alphanumeric-ness.
     /// Recommended that you use build() instead.
+    ///
+    /// # Examples
+    /// ```
+    /// unsafe {
+    /// let crane_safe = wordle::Guess::build("crane".to_string()).unwrap();
+    /// let crane_unsafe = wordle::Guess::new("crane".to_string());
+    ///
+    /// assert_eq!(crane_safe, crane_unsafe);
+    /// }
+    /// ```
     #[must_use]
     pub const unsafe fn new (text:String) -> Self {
         Self{ text }
