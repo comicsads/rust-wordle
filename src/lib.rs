@@ -6,9 +6,9 @@ pub struct Guess {
 }
 
 #[derive(Debug)]
-pub struct GuessError(String);
+pub struct GuessError<'a>(&'a str);
 
-impl fmt::Display for GuessError {
+impl fmt::Display for GuessError<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let Self(error_text) = self;
         write!(f, "{error_text}")
@@ -17,7 +17,7 @@ impl fmt::Display for GuessError {
 
 impl Guess {
     /// # Errors
-    /// Will return an error if given a string that isn't 5 letters
+    /// Will return an error if given a string that isn't 5 letters.
     ///
     /// # Examples
     /// ```
@@ -31,19 +31,19 @@ impl Guess {
     ///
     /// assert!(crane.is_ok())
     /// ```
-    pub fn build(text: String) -> Result<Self, GuessError> {
+    pub fn build(text: String) -> Result<Self, GuessError<'static>> {
         if text.len() != 5 {
-            return Err(GuessError("wasn't given 5 letters exactly!".to_owned()));
+            return Err(GuessError("wasn't given 5 letters exactly!"));
         }
         if !text.chars().all(char::is_alphanumeric) {
-            return Err(GuessError("wasn't given alphanumeric string!".to_owned()))
+            return Err(GuessError("wasn't given alphanumeric string!"))
         }
         Ok(Self { text })
     }
 
     /// # Safety
-    /// Has no checking for length or alphanumeric-ness
-    /// Recommended that you use build() instead
+    /// Has no checking for length or alphanumeric-ness.
+    /// Recommended that you use build() instead.
     #[must_use]
     pub const unsafe fn new (text:String) -> Self {
         Self{ text }
