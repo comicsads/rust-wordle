@@ -61,10 +61,14 @@ impl Guess {
         Self { text }
     }
 
-    fn verify(&self, answer: Guess) -> GameResponse {
-        let mut resp = "".to_string();
+    fn verify(&self, answer: &Self) -> GameResponse {
+        let mut resp = String::new();
         for (i, guessed_char) in self.to_string().chars().enumerate() {
-            let answer_char = answer.text.chars().nth(i).unwrap();
+            let answer_char = answer
+                .text
+                .chars()
+                .nth(i)
+                .expect("assuming guess and answer are both length 5");
             if guessed_char == answer_char {
                 resp.push('G');
             } else if answer.to_string().contains(guessed_char) {
@@ -91,8 +95,8 @@ struct GameResponse {
 
 impl GameResponse {
     /// X for Grey, C for Green, Y for Yellow
-    fn new(text: String) -> Self {
-        GameResponse { text }
+    const fn new(text: String) -> Self {
+        Self { text }
     }
 }
 
@@ -120,44 +124,44 @@ mod tests {
 
     #[test]
     fn test_speed_speed() {
-        let speed = Guess::build("speed".to_string()).unwrap();
-        let resp: GameResponse = speed.verify(speed.clone());
+        let speed = Guess::build("speed".to_string()).expect("value is hardcoded, shouldn't fail");
+        let resp: GameResponse = speed.verify(&speed);
         assert_eq!(resp.text, "GGGGG");
     }
 
     #[test]
     fn test_speed_abide() {
-        let speed = Guess::build("speed".to_string()).unwrap();
-        let abide = Guess::build("abide".to_string()).unwrap();
+        let speed = Guess::build("speed".to_string()).expect("value is hardcoded, shouldn't fail");
+        let abide = Guess::build("abide".to_string()).expect("value is hardcoded, shouldn't fail");
 
-        let resp: GameResponse = speed.verify(abide);
+        let resp: GameResponse = speed.verify(&abide);
         assert_eq!(resp.text, "XXYXY");
     }
 
     #[test]
     fn test_speed_erase() {
-        let speed = Guess::build("speed".to_string()).unwrap();
-        let erase = Guess::build("erase".to_string()).unwrap();
+        let speed = Guess::build("speed".to_string()).expect("value is hardcoded, shouldn't fail");
+        let erase = Guess::build("erase".to_string()).expect("value is hardcoded, shouldn't fail");
 
-        let resp: GameResponse = speed.verify(erase);
-        assert_eq!(resp.text, "XXYYX");
+        let resp: GameResponse = speed.verify(&erase);
+        assert_eq!(resp.text, "YXYYX");
     }
 
     #[test]
     fn test_speed_steal() {
-        let speed = Guess::build("speed".to_string()).unwrap();
-        let steal = Guess::build("steal".to_string()).unwrap();
+        let speed = Guess::build("speed".to_string()).expect("value is hardcoded, shouldn't fail");
+        let steal = Guess::build("steal".to_string()).expect("value is hardcoded, shouldn't fail");
 
-        let resp: GameResponse = speed.verify(steal);
+        let resp: GameResponse = speed.verify(&steal);
         assert_eq!(resp.text, "GXGXX");
     }
 
     #[test]
     fn test_speed_crepe() {
-        let speed = Guess::build("speed".to_string()).unwrap();
-        let crepe = Guess::build("crepe".to_string()).unwrap();
+        let speed = Guess::build("speed".to_string()).expect("value is hardcoded, shouldn't fail");
+        let crepe = Guess::build("crepe".to_string()).expect("value is hardcoded, shouldn't fail");
 
-        let resp: GameResponse = speed.verify(crepe);
+        let resp: GameResponse = speed.verify(&crepe);
         assert_eq!(resp.text, "XYGYX");
     }
 }
