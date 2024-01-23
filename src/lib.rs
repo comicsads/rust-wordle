@@ -66,7 +66,7 @@ impl Guess {
     }
 
     fn verify(&self, answer: &Self) -> GameResponse {
-        let mut resp = String::new();
+        let mut resp: [char; 5] = ['A', 'A', 'A', 'A', 'A'];
         for (i, guessed_char) in self.to_string().chars().enumerate() {
             let answer_char = answer
                 .text
@@ -74,14 +74,16 @@ impl Guess {
                 .nth(i)
                 .expect("assuming guess and answer are both length 5");
             if guessed_char == answer_char {
-                resp.push('G');
+                resp[i] = 'G';
             } else if answer.to_string().contains(guessed_char) {
-                resp.push('Y');
+                resp[i] = 'Y';
             } else {
-                resp.push('X');
+                resp[i] = 'X';
             }
         }
-        GameResponse { text: resp }
+        GameResponse {
+            text: resp.iter().collect(),
+        }
     }
 }
 
