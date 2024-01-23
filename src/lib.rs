@@ -41,8 +41,8 @@ impl Guess {
         if text.len() != 5 {
             return Err(GuessError("wasn't given 5 letters exactly!"));
         }
-        if !text.chars().all(char::is_alphanumeric) {
-            return Err(GuessError("wasn't given alphanumeric string!"));
+        if !text.chars().all(char::is_alphabetic) {
+            return Err(GuessError("wasn't given alphabetic string!"));
         }
         Ok(Self { text })
     }
@@ -198,5 +198,12 @@ mod tests {
             text: "GYGAX".to_string(),
         };
         resp.pretty_string();
+    }
+
+    #[test]
+    #[should_panic(expected = "wasn't given alphabetic string")]
+    fn test_guess_with_numbers() {
+        let bad_guess = Guess::build("12345".to_string());
+        bad_guess.unwrap();
     }
 }
