@@ -135,7 +135,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "I want this test to fail: GuessError")]
+    #[should_panic(expected = "wasn't given 5 letters exactly!")]
     fn it_doesnt_work_too() {
         let _ = Guess::build("wow".to_owned()).expect("I want this test to fail");
     }
@@ -201,9 +201,9 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "wasn't given alphabetic string")]
+    #[should_panic(expected = "wasn't given alphabetic string!")]
     fn test_guess_with_numbers() {
         let bad_guess = Guess::build("12345".to_string());
-        bad_guess.unwrap();
+        bad_guess.expect("I want this test to fail");
     }
 }
