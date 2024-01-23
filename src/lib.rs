@@ -72,7 +72,7 @@ impl Guess {
                 .text
                 .chars()
                 .nth(i)
-                .expect("assuming guess and answer are both length 5");
+                .expect("assuming guess and answer are both length 5 has failed us");
             if guessed_char == answer_char {
                 resp[i] = 'G';
             } else if answer.to_string().contains(guessed_char) {
