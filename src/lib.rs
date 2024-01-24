@@ -104,7 +104,7 @@ impl Guess {
         for (i, resp_char) in resp.iter().enumerate() {
             if *resp_char == GameResponseChar::Yellow(None) {
                 let char_to_match = guess_array[i];
-                for (j, _) in answer_array
+                for (j, _char) in answer_array
                     .iter()
                     .enumerate()
                     .filter(|(_, x)| **x == char_to_match)
@@ -112,19 +112,13 @@ impl Guess {
                     if !taken[j] {
                         new_resp[i] = GameResponseChar::Yellow(Some(j));
                         taken[j] = true;
+                        break;
                     } else {
                         new_resp[i] = GameResponseChar::Gray;
                     }
                 }
             }
         }
-        assert!(
-            new_resp
-                .iter()
-                .filter(|x| **x == GameResponseChar::Yellow(None))
-                .next()
-                == None
-        );
         GameResponse::new_from_game_resp_char(new_resp)
     }
 }
