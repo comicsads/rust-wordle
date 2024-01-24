@@ -11,11 +11,17 @@ const YELLOW: char = '🟨';
 const GRAY: char = '⬜';
 
 #[derive(Debug)]
-pub struct GuessError<'a>(&'a str);
+pub enum GuessError {
+    NotFiveLetters,
+    NotAlphabetic,
+}
 
-impl fmt::Display for GuessError<'_> {
+impl fmt::Display for GuessError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let Self(error_text) = self;
+        let error_text = match *self {
+            Self::NotFiveLetters => "wasn't given 5 letters exactly!",
+            Self::NotAlphabetic => "wasn't given alphabetic string!",
+        };
         write!(f, "{error_text}")
     }
 }
@@ -37,12 +43,12 @@ impl Guess {
     ///
     /// assert!(crane.is_ok())
     /// ```
-    pub fn build(text: String) -> Result<Self, GuessError<'static>> {
+    pub fn build(text: String) -> Result<Self, GuessError> {
         if text.len() != 5 {
-            return Err(GuessError("wasn't given 5 letters exactly!"));
+            return Err(GuessError::NotFiveLetters);
         }
         if !text.chars().all(char::is_alphabetic) {
-            return Err(GuessError("wasn't given alphabetic string!"));
+            return Err(GuessError::NotAlphabetic);
         }
         Ok(Self { text })
     }
@@ -135,7 +141,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "wasn't given 5 letters exactly!")]
+    #[should_panic(expected = "NotFiveLetters")]
     fn it_doesnt_work_too() {
         let _ = Guess::build("wow".to_owned()).expect("I want this test to fail");
     }
@@ -201,7 +207,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "wasn't given alphabetic string!")]
+    #[should_panic(expected = "NotAlphabetic")]
     fn test_guess_with_numbers() {
         let bad_guess = Guess::build("12345".to_string());
         bad_guess.expect("I want this test to fail");
