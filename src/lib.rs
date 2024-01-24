@@ -72,7 +72,13 @@ impl Guess {
     }
 
     fn verify(&self, answer: &Self) -> GameResponse {
-        let mut resp: [char; 5] = ['X', 'X', 'X', 'X', 'X'];
+        let mut resp: [GameResponseChar; 5] = [
+            GameResponseChar::Gray,
+            GameResponseChar::Gray,
+            GameResponseChar::Gray,
+            GameResponseChar::Gray,
+            GameResponseChar::Gray,
+        ];
         for (i, guessed_char) in self.to_string().chars().enumerate() {
             let answer_char = answer
                 .text
@@ -80,12 +86,12 @@ impl Guess {
                 .nth(i)
                 .expect("assuming guess and answer are both length 5 has failed us");
             if guessed_char == answer_char {
-                resp[i] = 'G';
+                resp[i] = GameResponseChar::Green;
             } else if answer.to_string().contains(guessed_char) {
-                resp[i] = 'Y';
+                resp[i] = GameResponseChar::Yellow;
             }
         }
-        GameResponse::new(resp.iter().collect())
+        GameResponse::new_from_game_resp_char(resp)
     }
 }
 
@@ -150,6 +156,10 @@ impl GameResponse {
     }
     fn pretty_string(&self) -> String {
         self.text.iter().map(GameResponseChar::to_emoji).collect()
+    }
+
+    const fn new_from_game_resp_char(resp: [GameResponseChar; 5]) -> Self {
+        Self { text: resp }
     }
 }
 
