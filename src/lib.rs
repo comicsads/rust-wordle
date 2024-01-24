@@ -91,7 +91,25 @@ impl Guess {
                 resp[i] = GameResponseChar::Yellow(None);
             }
         }
-        GameResponse::new_from_game_resp_char(resp)
+        let mut new_resp = resp.clone();
+        let mut taken: [bool; 5] = [false, false, false, false, false];
+        for (which_resp_char, _) in resp.iter().enumerate() {
+            if resp[which_resp_char] == GameResponseChar::Yellow(None) {
+                for (j, c) in answer.text.chars().enumerate() {
+                    if self.text.chars().nth(j).unwrap() == c {
+                        if !taken[j] {
+                            if resp[j] != GameResponseChar::Green {
+                                taken[j] = true;
+                                new_resp[which_resp_char] = GameResponseChar::Yellow(Some(j));
+                            }
+                        } else {
+                            new_resp[which_resp_char] = GameResponseChar::Gray;
+                        }
+                    }
+                }
+            }
+        }
+        GameResponse::new_from_game_resp_char(new_resp)
     }
 }
 
@@ -101,9 +119,10 @@ impl fmt::Display for Guess {
     }
 }
 
+#[derive(PartialEq, Clone)]
 enum GameResponseChar {
     Green,
-    Yellow(Option<u8>),
+    Yellow(Option<usize>),
     Gray,
 }
 
