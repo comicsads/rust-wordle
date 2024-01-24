@@ -140,7 +140,7 @@ impl GameResponseChar {
         match *self {
             Self::Green => 'G',
             Self::Yellow(_) => 'Y',
-            Self::Gray => 'X',
+            Self::Gray => '-',
         }
     }
 
@@ -158,7 +158,7 @@ struct GameResponse {
 }
 
 impl GameResponse {
-    /// X for Grey, C for Green, Y for Yellow
+    /// - for Grey, C for Green, Y for Yellow
     #[allow(clippy::needless_pass_by_value)]
     fn new(text: String) -> Self {
         let mut my_array: [GameResponseChar; 5] = [
@@ -172,8 +172,8 @@ impl GameResponse {
             my_array[i] = match c {
                 'G' => GameResponseChar::Green,
                 'Y' => GameResponseChar::Yellow(None),
-                'X' => GameResponseChar::Gray,
-                _ => panic!("GameResponse builder string contains char that isn't G, Y, or X!"),
+                '-' => GameResponseChar::Gray,
+                _ => panic!("GameResponse builder string contains char that isn't G, Y, or -!"),
             }
         }
         Self { text: my_array }
@@ -227,21 +227,21 @@ mod tests {
         };
     }
     test_gameresp!(speed_speed: "speed", "GGGGG");
-    test_gameresp!(speed_crepe: "crepe", "XYGYX");
-    test_gameresp!(speed_erase: "erase", "YXYYX");
-    test_gameresp!(speed_abide: "abide", "XXYXY");
-    test_gameresp!(speed_steal: "steal", "GXGXX");
+    test_gameresp!(speed_crepe: "crepe", "-YGY-");
+    test_gameresp!(speed_erase: "erase", "Y-YY-");
+    test_gameresp!(speed_abide: "abide", "--Y-Y");
+    test_gameresp!(speed_steal: "steal", "G-G--");
 
     #[test]
     fn test_gameresp_pretty() {
-        let resp = GameResponse::new("GYXYG".to_string());
+        let resp = GameResponse::new("GY-YG".to_string());
         assert_eq!(resp.pretty_string(), "🟩🟨⬜🟨🟩");
     }
 
     #[test]
-    #[should_panic(expected = "char that isn't G, Y, or X!")]
+    #[should_panic(expected = "char that isn't G, Y, or -!")]
     fn test_gameresp_pretty_crash() {
-        let resp = GameResponse::new("GYGAX".to_string());
+        let resp = GameResponse::new("GYGA-".to_string());
         resp.pretty_string();
     }
 
