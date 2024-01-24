@@ -79,6 +79,7 @@ impl Guess {
             GameResponseChar::Gray,
             GameResponseChar::Gray,
         ];
+        let mut taken: [bool; 5] = [false, false, false, false, false];
         let mut guess_array: [char; 5] = ['a', 'a', 'a', 'a', 'a'];
         for (i, c) in self.text.chars().enumerate() {
             guess_array[i] = c;
@@ -94,12 +95,12 @@ impl Guess {
             let answer_char = answer_array[i];
             if *guessed_char == answer_char {
                 resp[i] = GameResponseChar::Green;
+                taken[i] = true;
             } else if answer.to_string().contains(*guessed_char) {
                 resp[i] = GameResponseChar::Yellow(None);
             }
         }
         let mut new_resp = resp.clone();
-        let mut taken: [bool; 5] = [false, false, false, false, false];
         for (i, resp_char) in resp.iter().enumerate() {
             if *resp_char == GameResponseChar::Yellow(None) {
                 let char_to_match = guess_array[i];
@@ -233,10 +234,10 @@ mod tests {
         };
     }
     test_gameresp!(speed_speed: "speed", "GGGGG");
-    // test_gameresp!(speed_crepe: "crepe", "XYGYX");
-    // test_gameresp!(speed_erase: "erase", "YXYYX");
+    test_gameresp!(speed_crepe: "crepe", "XYGYX");
+    test_gameresp!(speed_erase: "erase", "YXYYX");
     test_gameresp!(speed_abide: "abide", "XXYXY");
-    // test_gameresp!(speed_steal: "steal", "GXGXX");
+    test_gameresp!(speed_steal: "steal", "GXGXX");
 
     #[test]
     fn test_gameresp_pretty() {
