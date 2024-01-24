@@ -88,7 +88,7 @@ impl Guess {
             if guessed_char == answer_char {
                 resp[i] = GameResponseChar::Green;
             } else if answer.to_string().contains(guessed_char) {
-                resp[i] = GameResponseChar::Yellow;
+                resp[i] = GameResponseChar::Yellow(None);
             }
         }
         GameResponse::new_from_game_resp_char(resp)
@@ -103,7 +103,7 @@ impl fmt::Display for Guess {
 
 enum GameResponseChar {
     Green,
-    Yellow,
+    Yellow(Option<u8>),
     Gray,
 }
 
@@ -111,7 +111,7 @@ impl GameResponseChar {
     const fn to_char(&self) -> char {
         match *self {
             Self::Green => 'G',
-            Self::Yellow => 'Y',
+            Self::Yellow(_) => 'Y',
             Self::Gray => 'X',
         }
     }
@@ -119,7 +119,7 @@ impl GameResponseChar {
     const fn to_emoji(&self) -> char {
         match *self {
             Self::Green => GREEN,
-            Self::Yellow => YELLOW,
+            Self::Yellow(_) => YELLOW,
             Self::Gray => GRAY,
         }
     }
@@ -143,7 +143,7 @@ impl GameResponse {
         for (i, c) in text.chars().enumerate() {
             my_array[i] = match c {
                 'G' => GameResponseChar::Green,
-                'Y' => GameResponseChar::Yellow,
+                'Y' => GameResponseChar::Yellow(None),
                 'X' => GameResponseChar::Gray,
                 _ => panic!("GameResponse builder string contains char that isn't G, Y, or X!"),
             }
@@ -187,7 +187,6 @@ mod tests {
 
     macro_rules! test_gameresp {
         ($name_of_function:ident: $answer:expr, $result:expr) => {
-            // ($(($name:ident), $answer:expr, $result: expr)+) => {
             #[test]
             fn $name_of_function() {
                 let guess =
