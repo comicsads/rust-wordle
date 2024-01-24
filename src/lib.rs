@@ -71,14 +71,9 @@ impl Guess {
         Self { text }
     }
 
-    fn verify(&self, answer: &Self) -> GameResponse {
-        let mut resp: [GameResponseChar; 5] = [
-            GameResponseChar::Gray,
-            GameResponseChar::Gray,
-            GameResponseChar::Gray,
-            GameResponseChar::Gray,
-            GameResponseChar::Gray,
-        ];
+    #[must_use]
+    pub fn verify(&self, answer: &Self) -> GameResponse {
+        let mut resp: [GameResponseChar; 5] = GameResponseChar::five_greys();
         let mut taken: [bool; 5] = [false, false, false, false, false];
         let mut guess_array: [char; 5] = ['a', 'a', 'a', 'a', 'a'];
         for (i, c) in self.text.chars().enumerate() {
@@ -151,38 +146,41 @@ impl GameResponseChar {
             Self::Gray => GRAY,
         }
     }
+
+    const fn five_greys() -> [Self; 5] {
+        [Self::Gray, Self::Gray, Self::Gray, Self::Gray, Self::Gray]
+    }
 }
 
-struct GameResponse {
+pub struct GameResponse {
     text: [GameResponseChar; 5],
 }
 
 impl GameResponse {
-    /// - for Grey, C for Green, Y for Yellow
+    /// - for Grey, C for Green, Y for Yellow.
+    /// # Panics
+    /// Will panic if string contains any characters that aren't G, Y, X or -.
     #[allow(clippy::needless_pass_by_value)]
-    fn new(text: String) -> Self {
-        let mut my_array: [GameResponseChar; 5] = [
-            GameResponseChar::Gray,
-            GameResponseChar::Gray,
-            GameResponseChar::Gray,
-            GameResponseChar::Gray,
-            GameResponseChar::Gray,
-        ];
+    #[must_use]
+    pub fn new(text: String) -> Self {
+        let mut my_array: [GameResponseChar; 5] = GameResponseChar::five_greys();
         for (i, c) in text.chars().enumerate() {
             my_array[i] = match c {
                 'G' => GameResponseChar::Green,
                 'Y' => GameResponseChar::Yellow(None),
-                '-' => GameResponseChar::Gray,
+                'X' | '-' => GameResponseChar::Gray,
                 _ => panic!("GameResponse builder string contains char that isn't G, Y, or -!"),
             }
         }
         Self { text: my_array }
     }
 
-    fn unpretty_string(&self) -> String {
+    /// Returns string of G, Y, and -'s.
+    pub fn unpretty_string(&self) -> String {
         self.text.iter().map(GameResponseChar::to_char).collect()
     }
-    fn pretty_string(&self) -> String {
+    /// Returns string of Emoji's representing G, Y, and -.
+    pub fn pretty_string(&self) -> String {
         self.text.iter().map(GameResponseChar::to_emoji).collect()
     }
 
