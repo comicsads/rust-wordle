@@ -100,13 +100,22 @@ impl Guess {
         }
         let mut new_resp = resp.clone();
         let mut taken: [bool; 5] = [false, false, false, false, false];
-        for (which_resp_char, _) in resp.iter().enumerate() {
-            if resp[which_resp_char] == GameResponseChar::Yellow(None) {
-                // new_resp[which_resp_char] = GameResponseChar::Yellow(Some(j));
+        for (i, resp_char) in resp.iter().enumerate() {
+            if *resp_char == GameResponseChar::Yellow(None) {
+                let char_to_match = guess_array[i];
+                for (j, _) in answer_array
+                    .iter()
+                    .enumerate()
+                    .filter(|(_, x)| **x == char_to_match)
+                {
+                    if !taken[j] {
+                        new_resp[i] = GameResponseChar::Yellow(Some(j));
+                        taken[j] = true;
+                    } else {
+                        new_resp[i] = GameResponseChar::Gray;
+                    }
+                }
             }
-        }
-        for i in new_resp.iter() {
-            println!("{:?}", i);
         }
         assert!(
             new_resp
