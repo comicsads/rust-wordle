@@ -113,9 +113,8 @@ impl Guess {
                         new_resp[i] = GameResponseChar::Yellow(Some(j));
                         taken[j] = true;
                         break;
-                    } else {
-                        new_resp[i] = GameResponseChar::Gray;
                     }
+                    new_resp[i] = GameResponseChar::Gray;
                 }
             }
         }
