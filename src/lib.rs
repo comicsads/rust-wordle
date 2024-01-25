@@ -208,7 +208,15 @@ mod tests {
     #[test]
     #[should_panic(expected = "NotFiveLetters")]
     fn it_doesnt_work_too() {
-        let _ = Guess::build("wow".to_owned()).expect("I want this test to fail");
+        let bad_guess = Guess::build("wow".to_owned());
+        bad_guess.expect("I want this test to fail");
+    }
+
+    #[test]
+    #[should_panic(expected = "NotAlphabetic")]
+    fn test_guess_with_numbers() {
+        let bad_guess = Guess::build("12345".to_string());
+        bad_guess.expect("I want this test to fail");
     }
 
     macro_rules! test_gameresp {
@@ -224,6 +232,7 @@ mod tests {
             }
         };
     }
+
     test_gameresp!(speed_speed: "speed", "GGGGG");
     test_gameresp!(speed_crepe: "crepe", "-YGY-");
     test_gameresp!(speed_erase: "erase", "Y-YY-");
@@ -233,20 +242,15 @@ mod tests {
     #[test]
     fn test_gameresp_pretty() {
         let resp = GameResponse::new("GY-YG".to_string());
-        assert_eq!(resp.pretty_string(), "🟩🟨⬜🟨🟩");
+        let my_array: [char; 5] = [GREEN, YELLOW, GRAY, YELLOW, GREEN];
+        let correct: String = my_array.iter().collect();
+        assert_eq!(resp.pretty_string(), correct);
     }
 
     #[test]
     #[should_panic(expected = "char that isn't G, Y, or -!")]
     fn test_gameresp_pretty_crash() {
-        let resp = GameResponse::new("GYGA-".to_string());
+        let resp = GameResponse::new("GYGAX".to_string());
         resp.pretty_string();
-    }
-
-    #[test]
-    #[should_panic(expected = "NotAlphabetic")]
-    fn test_guess_with_numbers() {
-        let bad_guess = Guess::build("12345".to_string());
-        bad_guess.expect("I want this test to fail");
     }
 }
