@@ -92,12 +92,12 @@ impl Guess {
                 resp[i] = GameResponseChar::Green;
                 taken[i] = true;
             } else if answer.to_string().contains(*guessed_char) {
-                resp[i] = GameResponseChar::Yellow(None);
+                resp[i] = GameResponseChar::Yellow;
             }
         }
         let mut new_resp = resp.clone();
         for (i, resp_char) in resp.iter().enumerate() {
-            if *resp_char == GameResponseChar::Yellow(None) {
+            if *resp_char == GameResponseChar::Yellow {
                 let char_to_match = guess_array[i];
                 for (j, _char) in answer_array
                     .iter()
@@ -105,7 +105,7 @@ impl Guess {
                     .filter(|(_, x)| **x == char_to_match)
                 {
                     if !taken[j] {
-                        new_resp[i] = GameResponseChar::Yellow(Some(j));
+                        new_resp[i] = GameResponseChar::Yellow;
                         taken[j] = true;
                         break;
                     }
@@ -126,7 +126,7 @@ impl fmt::Display for Guess {
 #[derive(Debug, PartialEq, Clone)]
 enum GameResponseChar {
     Green,
-    Yellow(Option<usize>),
+    Yellow,
     Gray,
 }
 
@@ -134,7 +134,7 @@ impl GameResponseChar {
     const fn to_char(&self) -> char {
         match *self {
             Self::Green => 'G',
-            Self::Yellow(_) => 'Y',
+            Self::Yellow => 'Y',
             Self::Gray => '-',
         }
     }
@@ -142,7 +142,7 @@ impl GameResponseChar {
     const fn to_emoji(&self) -> char {
         match *self {
             Self::Green => GREEN,
-            Self::Yellow(_) => YELLOW,
+            Self::Yellow => YELLOW,
             Self::Gray => GRAY,
         }
     }
@@ -167,7 +167,7 @@ impl GameResponse {
         for (i, c) in text.chars().enumerate() {
             my_array[i] = match c {
                 'G' => GameResponseChar::Green,
-                'Y' => GameResponseChar::Yellow(None),
+                'Y' => GameResponseChar::Yellow,
                 'X' | '-' => GameResponseChar::Gray,
                 _ => panic!("GameResponse builder string contains char that isn't G, Y, or -!"),
             }
