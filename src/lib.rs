@@ -33,13 +33,13 @@ impl Guess {
     ///
     /// # Examples
     /// ```
-    /// let rad = wordle::Guess::build("rad".to_string());
+    /// let rad = wordle_lib::Guess::build("rad".to_string());
     ///
     /// assert!(rad.is_err())
     /// ```
     ///
     /// ```
-    /// let crane = wordle::Guess::build("crane".to_string());
+    /// let crane = wordle_lib::Guess::build("crane".to_string());
     ///
     /// assert!(crane.is_ok())
     /// ```
@@ -50,7 +50,7 @@ impl Guess {
         if !text.chars().all(char::is_alphabetic) {
             return Err(GuessError::NotAlphabetic);
         }
-        Ok(Self { text })
+        unsafe { Ok(Self::new(text)) }
     }
 
     /// # Safety
@@ -60,8 +60,8 @@ impl Guess {
     /// # Examples
     /// ```
     /// unsafe {
-    /// let crane_safe = wordle::Guess::build("crane".to_string()).unwrap();
-    /// let crane_unsafe = wordle::Guess::new("crane".to_string());
+    /// let crane_safe = wordle_lib::Guess::build("crane".to_string()).unwrap();
+    /// let crane_unsafe = wordle_lib::Guess::new("crane".to_string());
     ///
     /// assert_eq!(crane_safe, crane_unsafe);
     /// }
@@ -162,7 +162,7 @@ impl GameResponse {
     /// Will panic if string contains any characters that aren't G, Y, X or -.
     #[allow(clippy::needless_pass_by_value)]
     #[must_use]
-    pub fn new(text: String) -> Self {
+    fn new(text: String) -> Self {
         let mut my_array: [GameResponseChar; 5] = GameResponseChar::five_greys();
         for (i, c) in text.chars().enumerate() {
             my_array[i] = match c {
