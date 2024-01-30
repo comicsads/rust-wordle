@@ -184,6 +184,11 @@ impl GameResponse {
         self.text.iter().map(GameResponseChar::to_emoji).collect()
     }
 
+    #[must_use]
+    pub fn victory(&self) -> bool {
+        self.text.iter().all(|x| *x == GameResponseChar::Green)
+    }
+
     const fn new_from_game_resp_char(resp: [GameResponseChar; 5]) -> Self {
         Self { text: resp }
     }
@@ -238,6 +243,22 @@ mod tests {
     test_gameresp!(speed_erase: "erase", "Y-YY-");
     test_gameresp!(speed_abide: "abide", "--Y-Y");
     test_gameresp!(speed_steal: "steal", "G-G--");
+
+    #[test]
+    fn verify_response() {
+        let guess = Guess::build("speed".to_string()).expect("value is hardcoded, shouldn't fail");
+        let answer = Guess::build("speed".to_string()).expect("value is hardcoded, shouldn't fail");
+        let resp: GameResponse = guess.verify(&answer);
+        assert!(resp.victory());
+    }
+
+    #[test]
+    fn verify_response_fail() {
+        let guess = Guess::build("speed".to_string()).expect("value is hardcoded, shouldn't fail");
+        let answer = Guess::build("speep".to_string()).expect("value is hardcoded, shouldn't fail");
+        let resp: GameResponse = guess.verify(&answer);
+        assert!(!resp.victory());
+    }
 
     #[test]
     fn test_gameresp_pretty() {
