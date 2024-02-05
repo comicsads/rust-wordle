@@ -74,42 +74,52 @@ impl Guess {
     #[must_use]
     pub fn verify(&self, answer: &Self) -> GameResponse {
         let mut resp: [GameResponseChar; 5] = GameResponseChar::five_greys();
-        let mut taken: [bool; 5] = [false, false, false, false, false];
-        let mut guess_array: [char; 5] = ['a', 'a', 'a', 'a', 'a'];
-        for (i, c) in self.text.chars().enumerate() {
-            guess_array[i] = c;
-        }
-        let guess_array = guess_array; //make immutable
-        let mut answer_array: [char; 5] = ['a', 'a', 'a', 'a', 'a'];
-        for (i, c) in answer.text.chars().enumerate() {
-            answer_array[i] = c;
-        }
-        let answer_array = answer_array; //make immutable
+        let mut answer_char_pointed_to_by_guess: [bool; 5] = [false, false, false, false, false];
+
+        let guess_array = {
+            let mut build_array: [char; 5] = ['a', 'a', 'a', 'a', 'a'];
+            for (i, c) in self.text.chars().enumerate() {
+                build_array[i] = c;
+            }
+            build_array
+        };
+
+        let answer_array = {
+            let mut build_array: [char; 5] = ['a', 'a', 'a', 'a', 'a'];
+            for (i, c) in answer.text.chars().enumerate() {
+                build_array[i] = c;
+            }
+            build_array
+        };
 
         for (i, guessed_char) in guess_array.iter().enumerate() {
             let answer_char = answer_array[i];
             if *guessed_char == answer_char {
                 resp[i] = GameResponseChar::Green;
-                taken[i] = true;
+                answer_char_pointed_to_by_guess[i] = true;
             } else if answer.to_string().contains(*guessed_char) {
                 resp[i] = GameResponseChar::Yellow;
             }
         }
+
         let mut new_resp = resp.clone();
-        for (i, resp_char) in resp.iter().enumerate() {
+        // Goes through response and makes sure that two yellow characters aren't pointing to the
+        // same letter in the answer
+        // TODO: Try to make this more readable
+        for (half_baked_resp_index, resp_char) in resp.iter().enumerate() {
             if *resp_char == GameResponseChar::Yellow {
-                let char_to_match = guess_array[i];
-                for (j, _char) in answer_array
+                let char_to_match = guess_array[half_baked_resp_index];
+                for (answer_index, _char) in answer_array
                     .iter()
                     .enumerate()
                     .filter(|(_, x)| **x == char_to_match)
                 {
-                    if !taken[j] {
-                        new_resp[i] = GameResponseChar::Yellow;
-                        taken[j] = true;
+                    if !answer_char_pointed_to_by_guess[answer_index] {
+                        new_resp[half_baked_resp_index] = GameResponseChar::Yellow;
+                        answer_char_pointed_to_by_guess[answer_index] = true;
                         break;
                     }
-                    new_resp[i] = GameResponseChar::Gray;
+                    new_resp[half_baked_resp_index] = GameResponseChar::Gray;
                 }
             }
         }
