@@ -272,8 +272,8 @@ mod tests {
 
     #[test]
     fn test_gameresp_pretty() {
-        let resp = GameResponse::new("GY-YG".to_string());
-        let my_array: [char; 5] = [GREEN, YELLOW, GRAY, YELLOW, GREEN];
+        let resp = GameResponse::new("GY-XG".to_string());
+        let my_array: [char; 5] = [GREEN, YELLOW, GRAY, GRAY, GREEN];
         let correct: String = my_array.iter().collect();
         assert_eq!(resp.pretty_string(), correct);
     }
