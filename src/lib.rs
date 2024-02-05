@@ -102,11 +102,11 @@ impl Guess {
             }
         }
 
-        let mut new_resp = resp.clone();
+        let resp_copy = resp.clone();
         // Goes through response and makes sure that two yellow characters aren't pointing to the
         // same letter in the answer
         // TODO: Try to make this more readable
-        for (half_baked_resp_index, resp_char) in resp.iter().enumerate() {
+        for (half_baked_resp_index, resp_char) in resp_copy.iter().enumerate() {
             if *resp_char == GameResponseChar::Yellow {
                 let char_to_match = guess_array[half_baked_resp_index];
                 for (answer_index, _char) in answer_array
@@ -115,15 +115,15 @@ impl Guess {
                     .filter(|(_, x)| **x == char_to_match)
                 {
                     if !answer_char_pointed_to_by_guess[answer_index] {
-                        new_resp[half_baked_resp_index] = GameResponseChar::Yellow;
+                        resp[half_baked_resp_index] = GameResponseChar::Yellow;
                         answer_char_pointed_to_by_guess[answer_index] = true;
                         break;
                     }
-                    new_resp[half_baked_resp_index] = GameResponseChar::Gray;
+                    resp[half_baked_resp_index] = GameResponseChar::Gray;
                 }
             }
         }
-        GameResponse::new_from_game_resp_char(new_resp)
+        GameResponse::new_from_game_resp_char(resp)
     }
 }
 
