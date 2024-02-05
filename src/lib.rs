@@ -29,19 +29,17 @@ impl fmt::Display for GuessError {
 impl Guess {
     /// It is on the calling code to verify that text is in your dictionary
     /// # Errors
-    /// Will return an error if given a string that isn't 5 letters.
+    /// Will return an error if given a string that isn't 5 letters or if it's not a-z.
     ///
     /// # Examples
     /// ```
-    /// let rad = wordle_lib::Guess::build("rad".to_string());
+    /// let crane = wordle_lib::Guess::build("crane".into());
+    /// let rad = wordle_lib::Guess::build("rad".into());
+    /// let bad_word = wordle_lib::Guess::build("@!@@4".into());
     ///
-    /// assert!(rad.is_err())
-    /// ```
-    ///
-    /// ```
-    /// let crane = wordle_lib::Guess::build("crane".to_string());
-    ///
-    /// assert!(crane.is_ok())
+    /// assert!(crane.is_ok());
+    /// assert!(rad.is_err());
+    /// assert!(bad_word.is_err());
     /// ```
     pub fn build(text: String) -> Result<Self, GuessError> {
         if text.len() != 5 {
@@ -54,17 +52,15 @@ impl Guess {
     }
 
     /// # Safety
-    /// Has no checking for length or alphanumeric-ness.
+    /// Has no checking for length or alphabetic-ness.
     /// Recommended that you use build() instead.
     ///
     /// # Examples
     /// ```
-    /// unsafe {
-    /// let crane_safe = wordle_lib::Guess::build("crane".to_string()).unwrap();
-    /// let crane_unsafe = wordle_lib::Guess::new("crane".to_string());
+    /// let crane_safe = wordle_lib::Guess::build("crane".into()).unwrap();
+    /// let crane_unsafe = unsafe {wordle_lib::Guess::new("crane".into())};
     ///
     /// assert_eq!(crane_safe, crane_unsafe);
-    /// }
     /// ```
     #[must_use]
     pub const unsafe fn new(text: String) -> Self {
