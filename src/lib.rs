@@ -175,7 +175,9 @@ impl GameResponse {
                 'G' => GameResponseChar::Green,
                 'Y' => GameResponseChar::Yellow,
                 'X' | '-' => GameResponseChar::Gray,
-                _ => panic!("GameResponse builder string contains char that isn't G, Y, or -!"),
+                _ => {
+                    unreachable!("GameResponse builder string contains char that isn't G, Y, or -!")
+                }
             }
         }
         Self { text: my_array }
