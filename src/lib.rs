@@ -6,20 +6,21 @@ pub struct Guess {
     text: String,
 }
 
+const WORD_LENGTH: usize = 5;
 const GREEN: char = '🟩';
 const YELLOW: char = '🟨';
 const GRAY: char = '⬜';
 
 #[derive(Debug)]
 pub enum GuessError {
-    NotFiveLetters,
+    NotRightLength,
     NotAlphabetic,
 }
 
 impl fmt::Display for GuessError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let error_text = match *self {
-            Self::NotFiveLetters => "wasn't given 5 letters exactly!",
+            Self::NotRightLength => "wasn't given the right amount of letters!",
             Self::NotAlphabetic => "wasn't given alphabetic string!",
         };
         write!(f, "{error_text}")
@@ -29,7 +30,7 @@ impl fmt::Display for GuessError {
 impl Guess {
     /// It is on the calling code to verify that text is in your dictionary
     /// # Errors
-    /// Will return an error if given a string that isn't 5 letters or if it's not a-z.
+    /// Will return an error if given a string that is the wrong length or if it's not a-z.
     ///
     /// # Examples
     /// ```
@@ -42,8 +43,8 @@ impl Guess {
     /// assert!(bad_word.is_err());
     /// ```
     pub fn build(text: String) -> Result<Self, GuessError> {
-        if text.len() != 5 {
-            return Err(GuessError::NotFiveLetters);
+        if text.len() != WORD_LENGTH {
+            return Err(GuessError::NotRightLength);
         }
         if !text.chars().all(char::is_alphabetic) {
             return Err(GuessError::NotAlphabetic);
@@ -67,8 +68,8 @@ impl Guess {
         Self { text }
     }
 
-    fn as_array(&self) -> [char; 5] {
-        let mut build_array: [char; 5] = ['a', 'a', 'a', 'a', 'a'];
+    fn as_array(&self) -> [char; WORD_LENGTH] {
+        let mut build_array: [char; WORD_LENGTH] = ['a', 'a', 'a', 'a', 'a'];
         for (i, c) in self.text.chars().enumerate() {
             build_array[i] = c;
         }
@@ -77,8 +78,9 @@ impl Guess {
 
     #[must_use]
     pub fn verify(&self, answer: &Self) -> GameResponse {
-        let mut resp: [GameResponseChar; 5] = GameResponseChar::five_greys();
-        let mut answer_char_pointed_to_by_guess: [bool; 5] = [false, false, false, false, false];
+        let mut resp: [GameResponseChar; WORD_LENGTH] = GameResponseChar::all_greys();
+        let mut answer_char_pointed_to_by_guess: [bool; WORD_LENGTH] =
+            [false, false, false, false, false];
 
         let guess_array = self.as_array();
 
@@ -149,13 +151,13 @@ impl GameResponseChar {
         }
     }
 
-    const fn five_greys() -> [Self; 5] {
+    const fn all_greys() -> [Self; WORD_LENGTH] {
         [Self::Gray, Self::Gray, Self::Gray, Self::Gray, Self::Gray]
     }
 }
 
 pub struct GameResponse {
-    text: [GameResponseChar; 5],
+    text: [GameResponseChar; WORD_LENGTH],
 }
 
 impl GameResponse {
@@ -165,7 +167,7 @@ impl GameResponse {
     #[allow(clippy::needless_pass_by_value)]
     #[must_use]
     fn new(text: String) -> Self {
-        let mut my_array: [GameResponseChar; 5] = GameResponseChar::five_greys();
+        let mut my_array: [GameResponseChar; WORD_LENGTH] = GameResponseChar::all_greys();
         for (i, c) in text.chars().enumerate() {
             my_array[i] = match c {
                 'G' => GameResponseChar::Green,
@@ -193,7 +195,7 @@ impl GameResponse {
         self.text.iter().all(|x| *x == GameResponseChar::Green)
     }
 
-    const fn new_from_game_resp_char(resp: [GameResponseChar; 5]) -> Self {
+    const fn new_from_game_resp_char(resp: [GameResponseChar; WORD_LENGTH]) -> Self {
         Self { text: resp }
     }
 }
@@ -215,7 +217,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "NotFiveLetters")]
+    #[should_panic(expected = "NotRightLength")]
     fn it_doesnt_work_too() {
         let bad_guess = Guess::build("wow".to_owned());
         bad_guess.expect("I want this test to fail");
@@ -267,7 +269,7 @@ mod tests {
     #[test]
     fn test_gameresp_pretty() {
         let resp = GameResponse::new("GY-XG".to_string());
-        let my_array: [char; 5] = [GREEN, YELLOW, GRAY, GRAY, GREEN];
+        let my_array: [char; WORD_LENGTH] = [GREEN, YELLOW, GRAY, GRAY, GREEN];
         let correct: String = my_array.iter().collect();
         assert_eq!(resp.pretty_string(), correct);
     }
