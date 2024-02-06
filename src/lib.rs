@@ -67,7 +67,6 @@ impl Guess {
         Self { text }
     }
 
-    //TODO: Maybe replace with an into
     fn as_array(&self) -> [char; 5] {
         let mut build_array: [char; 5] = ['a', 'a', 'a', 'a', 'a'];
         for (i, c) in self.text.chars().enumerate() {
