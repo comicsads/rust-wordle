@@ -67,26 +67,23 @@ impl Guess {
         Self { text }
     }
 
+    //TODO: Maybe replace with an into
+    fn as_array(&self) -> [char; 5] {
+        let mut build_array: [char; 5] = ['a', 'a', 'a', 'a', 'a'];
+        for (i, c) in self.text.chars().enumerate() {
+            build_array[i] = c;
+        }
+        build_array
+    }
+
     #[must_use]
     pub fn verify(&self, answer: &Self) -> GameResponse {
         let mut resp: [GameResponseChar; 5] = GameResponseChar::five_greys();
         let mut answer_char_pointed_to_by_guess: [bool; 5] = [false, false, false, false, false];
 
-        let guess_array = {
-            let mut build_array: [char; 5] = ['a', 'a', 'a', 'a', 'a'];
-            for (i, c) in self.text.chars().enumerate() {
-                build_array[i] = c;
-            }
-            build_array
-        };
+        let guess_array = self.as_array();
 
-        let answer_array = {
-            let mut build_array: [char; 5] = ['a', 'a', 'a', 'a', 'a'];
-            for (i, c) in answer.text.chars().enumerate() {
-                build_array[i] = c;
-            }
-            build_array
-        };
+        let answer_array = answer.as_array();
 
         for (i, guessed_char) in guess_array.iter().enumerate() {
             let answer_char = answer_array[i];
