@@ -78,7 +78,8 @@ impl Guess {
 
     #[must_use]
     pub fn verify(&self, answer: &Self) -> GameResponse {
-        let mut resp: [GameResponseChar; WORD_LENGTH] = GameResponseChar::all_greys();
+        use GameResponseChar as GRC;
+        let mut resp: [GRC; WORD_LENGTH] = GRC::all_greys();
         let mut answer_char_pointed_to_by_guess: [bool; WORD_LENGTH] =
             [false, false, false, false, false];
 
@@ -89,10 +90,10 @@ impl Guess {
         for (i, guessed_char) in guess_array.iter().enumerate() {
             let answer_char = answer_array[i];
             if *guessed_char == answer_char {
-                resp[i] = GameResponseChar::Green;
+                resp[i] = GRC::Green;
                 answer_char_pointed_to_by_guess[i] = true;
             } else if answer.to_string().contains(*guessed_char) {
-                resp[i] = GameResponseChar::Yellow;
+                resp[i] = GRC::Yellow;
             }
         }
 
@@ -100,21 +101,23 @@ impl Guess {
         // Goes through response and makes sure that two yellow characters aren't pointing to the
         // same letter in the answer
         // TODO: Try to make this more readable
-        for (half_baked_resp_index, resp_char) in resp_copy.iter().enumerate() {
-            if *resp_char == GameResponseChar::Yellow {
-                let char_to_match = guess_array[half_baked_resp_index];
-                for (answer_index, _char) in answer_array
-                    .iter()
-                    .enumerate()
-                    .filter(|(_, x)| **x == char_to_match)
-                {
-                    if !answer_char_pointed_to_by_guess[answer_index] {
-                        resp[half_baked_resp_index] = GameResponseChar::Yellow;
-                        answer_char_pointed_to_by_guess[answer_index] = true;
-                        break;
-                    }
-                    resp[half_baked_resp_index] = GameResponseChar::Gray;
+        for (half_baked_resp_index, _resp_char) in resp_copy
+            .iter()
+            .enumerate()
+            .filter(|(_, c)| **c == GRC::Yellow)
+        {
+            let char_to_match = guess_array[half_baked_resp_index];
+            for (answer_index, _char) in answer_array
+                .iter()
+                .enumerate()
+                .filter(|(_, x)| **x == char_to_match)
+            {
+                if !answer_char_pointed_to_by_guess[answer_index] {
+                    resp[half_baked_resp_index] = GRC::Yellow;
+                    answer_char_pointed_to_by_guess[answer_index] = true;
+                    break;
                 }
+                resp[half_baked_resp_index] = GRC::Gray;
             }
         }
         GameResponse::new_from_game_resp_char(resp)
